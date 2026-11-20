@@ -1,0 +1,1375 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="theme-color" content="#07090d" id="meta-theme-color" />
+  <title>AutoLife™ v5.6</title>
+
+  <!-- Crisp Industrial Typography: Inter & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    /* =========================================================================
+       DESIGN TOKENS & THEME VARIABLES
+       Sleek Dark (Default - ideal for dim apartment shoots without blown highs)
+       Sterile White (Clinical cold minimalist look)
+       ========================================================================= */
+    :root,
+    [data-theme="dark"] {
+      --bg-stage: #030406;
+      --bg-app: #07090d;
+      --bg-surface: rgba(15, 20, 29, 0.78);
+      --bg-surface-solid: #0e131c;
+      --bg-surface-elevated: rgba(24, 32, 46, 0.86);
+      --border-hairline: rgba(148, 163, 184, 0.14);
+      --border-strong: rgba(148, 163, 184, 0.26);
+      --text-primary: #f1f5f9;
+      --text-secondary: #94a3b8;
+      --text-muted: #5b687c;
+      --accent: #38bdf8;
+      --accent-soft: rgba(56, 189, 248, 0.14);
+      --accent-glow: rgba(56, 189, 248, 0.34);
+      --accent-ring: rgba(125, 211, 252, 0.45);
+      --btn-bg: #f1f5f9;
+      --btn-text: #07090d;
+      --btn-shadow: 0 0 40px rgba(56, 189, 248, 0.22), 0 8px 28px rgba(0, 0, 0, 0.65);
+      --canvas-wave: rgba(56, 189, 248, 0.85);
+      --canvas-wave-dim: rgba(148, 163, 184, 0.22);
+      --canvas-ring: rgba(148, 163, 184, 0.15);
+      --canvas-tick: rgba(148, 163, 184, 0.32);
+      --status-good: #34d399;
+      --banner-bg: rgba(56, 189, 248, 0.08);
+      --banner-border: rgba(56, 189, 248, 0.25);
+      --sheet-backdrop: rgba(2, 4, 8, 0.72);
+    }
+
+    [data-theme="light"] {
+      --bg-stage: #dde3ec;
+      --bg-app: #f4f7fb;
+      --bg-surface: rgba(255, 255, 255, 0.88);
+      --bg-surface-solid: #ffffff;
+      --bg-surface-elevated: rgba(241, 245, 249, 0.95);
+      --border-hairline: rgba(15, 23, 42, 0.09);
+      --border-strong: rgba(15, 23, 42, 0.18);
+      --text-primary: #0b1220;
+      --text-secondary: #475569;
+      --text-muted: #8494a8;
+      --accent: #0284c7;
+      --accent-soft: rgba(2, 132, 199, 0.1);
+      --accent-glow: rgba(2, 132, 199, 0.22);
+      --accent-ring: rgba(2, 132, 199, 0.38);
+      --btn-bg: #0b1220;
+      --btn-text: #f8fafc;
+      --btn-shadow: 0 0 36px rgba(2, 132, 199, 0.18), 0 12px 26px rgba(15, 23, 42, 0.18);
+      --canvas-wave: rgba(2, 132, 199, 0.85);
+      --canvas-wave-dim: rgba(15, 23, 42, 0.16);
+      --canvas-ring: rgba(15, 23, 42, 0.1);
+      --canvas-tick: rgba(15, 23, 42, 0.24);
+      --status-good: #059669;
+      --banner-bg: rgba(2, 132, 199, 0.06);
+      --banner-border: rgba(2, 132, 199, 0.2);
+      --sheet-backdrop: rgba(15, 23, 42, 0.42);
+    }
+
+    /* =========================================================================
+       NATIVE APP LOCKDOWN (Prevent bounce, selection, zoom, callouts on set)
+       ========================================================================= */
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+      -webkit-touch-callout: none;
+      -webkit-user-select: none;
+      user-select: none;
+    }
+
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      overscroll-behavior: none;
+      touch-action: manipulation;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: var(--bg-stage);
+      color: var(--text-primary);
+      transition: background-color 0.35s ease, color 0.35s ease;
+    }
+
+    .font-mono-tech {
+      font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* Mobile-first full bleed; sleek centered device viewport on large screens */
+    #app-shell {
+      position: relative;
+      width: 100vw;
+      height: 100dvh;
+      background-color: var(--bg-app);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: background-color 0.35s ease;
+    }
+
+    @media (min-width: 640px) {
+      body:not(.is-fullscreen) {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      body:not(.is-fullscreen) #app-shell {
+        width: 100%;
+        max-width: 420px;
+        height: min(860px, 94dvh);
+        border-radius: 2.5rem;
+        border: 1px solid var(--border-strong);
+        box-shadow: 0 32px 90px rgba(0, 0, 0, 0.55);
+      }
+    }
+
+    /* Subtle clinical radial ambient glow inside screen */
+    .ambient-glow {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background: radial-gradient(circle at 50% 42%, var(--accent-soft) 0%, transparent 62%);
+      opacity: 0.85;
+      transition: opacity 0.6s ease;
+    }
+
+    /* Subtle dot-matrix grid overlay (Nothing / Black Mirror industrial feel) */
+    .micro-grid {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background-image: radial-gradient(var(--border-hairline) 1px, transparent 1px);
+      background-size: 22px 22px;
+      mask-image: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.75) 10%, transparent 78%);
+      -webkit-mask-image: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.75) 10%, transparent 78%);
+    }
+
+    /* =========================================================================
+       KEYFRAME ANIMATIONS
+       ========================================================================= */
+    @keyframes pulseSlow {
+      0%, 100% {
+        transform: scale(1);
+        opacity: 0.72;
+      }
+      50% {
+        transform: scale(1.13);
+        opacity: 0.2;
+      }
+    }
+
+    @keyframes pulseTemptation {
+      0%, 100% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 var(--accent-glow), var(--btn-shadow);
+      }
+      50% {
+        transform: scale(1.032);
+        box-shadow: 0 0 0 22px rgba(56, 189, 248, 0), var(--btn-shadow);
+      }
+    }
+
+    @keyframes rippleOut {
+      0% {
+        transform: scale(0.75);
+        opacity: 0.75;
+      }
+      100% {
+        transform: scale(2.15);
+        opacity: 0;
+      }
+    }
+
+    @keyframes breatheCore {
+      0%, 100% {
+        transform: scale(0.95);
+        opacity: 0.72;
+      }
+      50% {
+        transform: scale(1.06);
+        opacity: 1;
+      }
+    }
+
+    @keyframes statusDot {
+      0%, 100% {
+        opacity: 1;
+      }
+      50% {
+        opacity: 0.35;
+      }
+    }
+
+    @keyframes fadeSlideUp {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .anim-pulse-ring {
+      animation: pulseSlow 3.4s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+    }
+
+    .anim-pulse-ring-delay {
+      animation: pulseSlow 3.4s cubic-bezier(0.4, 0, 0.2, 1) 1.7s infinite;
+    }
+
+    .anim-temptation-btn {
+      animation: pulseTemptation 3.1s ease-in-out infinite;
+    }
+
+    .anim-ripple-1 {
+      animation: rippleOut 1.8s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+    }
+
+    .anim-ripple-2 {
+      animation: rippleOut 1.8s cubic-bezier(0.16, 1, 0.3, 1) 0.6s infinite;
+    }
+
+    .anim-ripple-3 {
+      animation: rippleOut 1.8s cubic-bezier(0.16, 1, 0.3, 1) 1.2s infinite;
+    }
+
+    .anim-breathe {
+      animation: breatheCore 4.6s ease-in-out infinite;
+    }
+
+    .anim-status-dot {
+      animation: statusDot 2.4s ease-in-out infinite;
+    }
+
+    .scene-enter {
+      animation: fadeSlideUp 0.42s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+
+    /* Tactile circular ACTIVATE button */
+    .activate-btn {
+      background-color: var(--btn-bg);
+      color: var(--btn-text);
+      box-shadow: var(--btn-shadow);
+      transition: transform 0.16s cubic-bezier(0.22, 1, 0.36, 1), background-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .activate-btn:active {
+      transform: scale(0.94);
+    }
+
+    /* Clinical card styling */
+    .clinical-card {
+      background-color: var(--bg-surface);
+      border: 1px solid var(--border-hairline);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      transition: background-color 0.3s ease, border-color 0.3s ease;
+    }
+
+    /* Director Bottom Sheet Transitions */
+    #director-overlay {
+      background-color: var(--sheet-backdrop);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+    }
+
+    #director-overlay.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    #director-sheet {
+      background-color: var(--bg-surface-solid);
+      border-top: 1px solid var(--border-strong);
+      transform: translateY(100%);
+      transition: transform 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    #director-overlay.open #director-sheet {
+      transform: translateY(0);
+    }
+
+    /* Custom subtle toast inside Director sheet (no alert/confirm) */
+    #director-notice {
+      transition: opacity 0.25s ease;
+    }
+  </style>
+</head>
+<body>
+  <!-- =========================================================================
+       MAIN APP SHELL (Full-screen smartphone prop interface)
+       ========================================================================= -->
+  <div id="app-shell">
+    <!-- Subtle background layers -->
+    <div class="ambient-glow" id="ambient-glow"></div>
+    <div class="micro-grid"></div>
+
+    <!-- =======================================================================
+         MOCK PHONE STATUS BAR (Toggleable via Director Controls)
+         ======================================================================= -->
+    <div id="mock-status-bar" class="relative z-20 flex items-center justify-between px-6 pt-3 pb-1 text-[11px] font-medium tracking-tight" style="color: var(--text-primary);">
+      <span id="status-bar-time" class="font-mono-tech font-medium tracking-tight">07:30</span>
+      <div class="flex items-center gap-1.5 opacity-90">
+        <!-- Cellular Signal Bars -->
+        <svg width="15" height="10" viewBox="0 0 15 10" fill="currentColor" aria-hidden="true">
+          <rect x="0" y="6.5" width="2.4" height="3.5" rx="0.6" />
+          <rect x="3.8" y="4.5" width="2.4" height="5.5" rx="0.6" />
+          <rect x="7.6" y="2.5" width="2.4" height="7.5" rx="0.6" />
+          <rect x="11.4" y="0.5" width="2.4" height="9.5" rx="0.6" />
+        </svg>
+        <span class="font-mono-tech text-[9.5px] tracking-tighter ml-0.5">5G</span>
+        <!-- Battery Indicator -->
+        <div class="flex items-center gap-0.5 ml-1">
+          <div class="relative w-[22px] h-[11px] rounded-[3px] border border-current p-[1.5px] flex items-center">
+            <div id="status-bar-battery-fill" class="h-full rounded-[1.5px] bg-current transition-all duration-300" style="width: 84%;"></div>
+          </div>
+          <div class="w-[1.5px] h-[4px] rounded-r-sm bg-current opacity-70"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- =======================================================================
+         PERSISTENT MINIMALIST HEADER
+         Tapping "v5.6" opens discreet Director's Set Controls
+         ======================================================================= -->
+    <header id="app-header" class="relative z-20 flex items-center justify-between px-6 pt-4 pb-2">
+      <div class="flex items-center gap-2.5">
+        <!-- Geometric AutoLife Brand Mark -->
+        <div class="w-7 h-7 rounded-full flex items-center justify-center border" style="border-color: var(--border-strong); background-color: var(--bg-surface);">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="color: var(--accent);">
+            <circle cx="12" cy="12" r="9" stroke-opacity="0.35" />
+            <circle cx="12" cy="12" r="4.5" />
+            <line x1="12" y1="2" x2="12" y2="5.5" stroke-linecap="round" />
+            <line x1="12" y1="18.5" x2="12" y2="22" stroke-linecap="round" />
+          </svg>
+        </div>
+        <div class="flex items-baseline gap-1.5">
+          <span class="text-[16px] font-medium tracking-tight" style="color: var(--text-primary);">AutoLife<sup class="text-[9px] font-normal ml-0.5 opacity-75">™</sup></span>
+          <!-- Discreet Trigger for Director's Set Controls -->
+          <button
+            id="director-trigger-btn"
+            type="button"
+            aria-label="Version 5.6"
+            class="font-mono-tech text-[10px] px-1.5 py-0.5 rounded-md border transition-opacity active:opacity-60 cursor-pointer"
+            style="color: var(--text-secondary); border-color: var(--border-hairline); background-color: var(--bg-surface);"
+          >
+            v5.6
+          </button>
+        </div>
+      </div>
+
+      <!-- Neural Implant Status Pill -->
+      <div id="implant-pill" class="flex items-center gap-1.5 px-2.5 py-1 rounded-full border" style="border-color: var(--border-hairline); background-color: var(--bg-surface);">
+        <span id="implant-dot" class="w-1.5 h-1.5 rounded-full anim-status-dot" style="background-color: var(--status-good);"></span>
+        <span id="implant-text" class="font-mono-tech text-[9.5px] tracking-wider uppercase" style="color: var(--text-secondary);">IMPLANT LINKED • 99.8%</span>
+      </div>
+    </header>
+
+    <!-- =======================================================================
+         MAIN SCENE VIEWPORT CONTAINER
+         ======================================================================= -->
+    <main class="relative z-10 flex-1 flex flex-col justify-between overflow-hidden px-6 pb-8 pt-2">
+
+      <!-- =====================================================================
+           SCENE 1: ACTIVATION MODE (DEFAULT)
+           Substates: standby -> calibrating (2.5s) -> engaged
+           ===================================================================== -->
+      <section id="scene-1" class="flex-1 flex flex-col justify-between scene-enter">
+
+        <!-- SUBSTATE 1A: STANDBY / READY TO ACTIVATE -->
+        <div id="s1-standby" class="flex-1 flex flex-col justify-between">
+          <!-- Telemetry Header Meta -->
+          <div class="flex items-center justify-between pt-2">
+            <div>
+              <p class="font-mono-tech text-[10px] uppercase tracking-[0.18em]" style="color: var(--text-muted);">CORTEX INTERFACE</p>
+              <h1 class="text-[20px] font-light tracking-tight mt-0.5" style="color: var(--text-primary);">Neural Standby</h1>
+            </div>
+            <div class="text-right font-mono-tech">
+              <p class="text-[10px] uppercase tracking-[0.16em]" style="color: var(--text-muted);">SYNAPSE LATENCY</p>
+              <p class="text-[12px] mt-0.5" style="color: var(--accent);">0.4 ms</p>
+            </div>
+          </div>
+
+          <!-- Center Biometric Telemetry Ring + Live Sine Wave Canvas -->
+          <div class="relative flex-1 flex flex-col items-center justify-center my-2 min-h-[210px]">
+            <div id="telemetry-canvas-wrap" class="relative w-full max-w-[270px] aspect-square flex items-center justify-center">
+              <canvas id="telemetry-canvas" class="w-full h-full block"></canvas>
+              <!-- Center Minimal Telemetry Readout Overlay -->
+              <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                <span class="font-mono-tech text-[9px] uppercase tracking-[0.22em]" style="color: var(--text-muted);">BASELINE</span>
+                <span class="font-mono-tech text-[26px] font-light tracking-tight mt-0.5" style="color: var(--text-primary);">99.8<span class="text-[13px] opacity-60">%</span></span>
+                <span class="font-mono-tech text-[9.5px] tracking-[0.16em] uppercase mt-1 px-2 py-0.5 rounded-full" style="color: var(--accent); background-color: var(--accent-soft);">READY TO SYNC</span>
+              </div>
+            </div>
+
+            <!-- Subtle Biometric Strip -->
+            <div class="w-full max-w-[300px] grid grid-cols-3 gap-2 mt-2">
+              <div class="clinical-card rounded-xl px-2.5 py-2 text-center">
+                <p class="font-mono-tech text-[8.5px] uppercase tracking-widest" style="color: var(--text-muted);">PULSE</p>
+                <p class="font-mono-tech text-[12px] mt-0.5" style="color: var(--text-primary);">64 BPM</p>
+              </div>
+              <div class="clinical-card rounded-xl px-2.5 py-2 text-center">
+                <p class="font-mono-tech text-[8.5px] uppercase tracking-widest" style="color: var(--text-muted);">ROUTINE</p>
+                <p class="font-mono-tech text-[12px] mt-0.5" style="color: var(--text-primary);">WORKDAY</p>
+              </div>
+              <div class="clinical-card rounded-xl px-2.5 py-2 text-center">
+                <p class="font-mono-tech text-[8.5px] uppercase tracking-widest" style="color: var(--text-muted);">BYPASS</p>
+                <p class="font-mono-tech text-[12px] mt-0.5" style="color: var(--text-primary);">AUTO</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- High-Contrast Circular / Pill ACTIVATE Button -->
+          <div class="flex flex-col items-center pb-2">
+            <div class="relative flex items-center justify-center w-full max-w-[280px]">
+              <button
+                id="btn-activate-s1"
+                type="button"
+                class="activate-btn relative z-10 w-full py-4.5 px-8 rounded-full flex items-center justify-center gap-3 cursor-pointer"
+                style="padding-top: 1.05rem; padding-bottom: 1.05rem;"
+              >
+                <span class="w-2 h-2 rounded-full" style="background-color: var(--accent);"></span>
+                <span class="font-mono-tech text-[14px] font-medium tracking-[0.26em] uppercase">ACTIVATE</span>
+              </button>
+            </div>
+            <p class="font-mono-tech text-[9.5px] tracking-[0.14em] uppercase mt-3.5" style="color: var(--text-muted);">
+              TAP TO ENGAGE AUTOPILOT PROTOCOL
+            </p>
+          </div>
+        </div>
+
+        <!-- SUBSTATE 1B: CALIBRATING / NEURAL SYNC (2.5 SECONDS, SILENT) -->
+        <div id="s1-calibrating" class="hidden flex-1 flex-col items-center justify-center text-center">
+          <div class="relative w-56 h-56 flex items-center justify-center">
+            <!-- Expanding Concentric Geometric Rings -->
+            <div class="absolute inset-6 rounded-full border anim-ripple-1" style="border-color: var(--accent-ring);"></div>
+            <div class="absolute inset-6 rounded-full border anim-ripple-2" style="border-color: var(--accent-ring);"></div>
+            <div class="absolute inset-6 rounded-full border anim-ripple-3" style="border-color: var(--accent-ring);"></div>
+
+            <!-- Inner Rotating Geometric Ring -->
+            <svg class="w-36 h-36 animate-spin" style="animation-duration: 5s;" viewBox="0 0 120 120" fill="none">
+              <circle cx="60" cy="60" r="54" stroke="currentColor" stroke-opacity="0.16" stroke-width="1" style="color: var(--text-secondary);" />
+              <path d="M 60 6 A 54 54 0 0 1 114 60" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="color: var(--accent);" />
+              <circle cx="60" cy="60" r="38" stroke="currentColor" stroke-opacity="0.22" stroke-width="1" stroke-dasharray="3 5" style="color: var(--accent);" />
+            </svg>
+
+            <!-- Center Percentage -->
+            <div class="absolute inset-0 flex flex-col items-center justify-center">
+              <span id="calib-percent" class="font-mono-tech text-[26px] font-light tracking-tight" style="color: var(--text-primary);">0%</span>
+            </div>
+          </div>
+
+          <!-- Calibration Text & Sleek Progress Bar -->
+          <div class="w-full max-w-[260px] mt-8">
+            <p id="calib-stage-text" class="font-mono-tech text-[11px] uppercase tracking-[0.22em]" style="color: var(--accent);">
+              CALIBRATING CORTEX...
+            </p>
+            <div class="w-full h-[3px] rounded-full overflow-hidden mt-4" style="background-color: var(--border-hairline);">
+              <div id="calib-progress-bar" class="h-full rounded-full" style="width: 0%; background-color: var(--accent); transition: width 60ms linear;"></div>
+            </div>
+            <p class="font-mono-tech text-[9.5px] uppercase tracking-[0.16em] mt-3" style="color: var(--text-muted);">
+              MAINTAIN STILLNESS • MOTOR SYNC
+            </p>
+          </div>
+        </div>
+
+        <!-- SUBSTATE 1C: AUTOPILOT ENGAGED LOCK SCREEN -->
+        <div id="s1-engaged" class="hidden flex-1 flex-col items-center justify-between py-6 text-center">
+          <div class="pt-2">
+            <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full border font-mono-tech text-[10px] uppercase tracking-[0.2em]" style="border-color: var(--banner-border); background-color: var(--accent-soft); color: var(--accent);">
+              <span class="w-1.5 h-1.5 rounded-full anim-status-dot" style="background-color: var(--accent);"></span>
+              NEURAL LOCK ACTIVE
+            </span>
+          </div>
+
+          <!-- Eerie Calm Center Pulsing Core -->
+          <div id="engaged-reset-zone" class="relative flex flex-col items-center justify-center my-auto cursor-pointer">
+            <div class="relative w-44 h-44 flex items-center justify-center">
+              <div class="absolute inset-0 rounded-full border anim-pulse-ring" style="border-color: var(--accent-ring);"></div>
+              <div class="absolute inset-5 rounded-full border anim-pulse-ring-delay" style="border-color: var(--border-strong);"></div>
+              <div class="w-24 h-24 rounded-full flex items-center justify-center anim-breathe border" style="background: radial-gradient(circle, var(--accent-soft) 0%, transparent 72%); border-color: var(--accent-ring);">
+                <div class="w-3.5 h-3.5 rounded-full" style="background-color: var(--accent); box-shadow: 0 0 22px var(--accent);"></div>
+              </div>
+            </div>
+
+            <h2 class="text-[22px] font-light tracking-[0.16em] uppercase mt-8" style="color: var(--text-primary);">
+              AUTOPILOT ENGAGED
+            </h2>
+            <p class="font-mono-tech text-[10.5px] tracking-[0.18em] uppercase mt-2.5 px-4 leading-relaxed" style="color: var(--text-secondary);">
+              CONSCIOUSNESS SUSPENDED • ROUTINE ACTIVE
+            </p>
+          </div>
+
+          <!-- Quiet Footer Telemetry (Double-tap or hold center text resets cleanly) -->
+          <div class="w-full max-w-[280px] pt-4 border-t" style="border-color: var(--border-hairline);">
+            <div class="flex items-center justify-between font-mono-tech text-[9.5px] tracking-[0.15em] uppercase" style="color: var(--text-muted);">
+              <span>CORTEX: BYPASSED</span>
+              <span>EFFICIENCY: OPTIMAL</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- =====================================================================
+           SCENE 2: TIME-SKIPPED WAKE-UP SUMMARY (11:42 PM)
+           ===================================================================== -->
+      <section id="scene-2" class="hidden flex-1 flex-col justify-between scene-enter">
+        <!-- Prominent Digital Clock Header -->
+        <div class="text-center pt-2">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full border mb-3" style="border-color: var(--border-hairline); background-color: var(--bg-surface);">
+            <span class="w-1.5 h-1.5 rounded-full" style="background-color: var(--status-good);"></span>
+            <span class="font-mono-tech text-[9.5px] uppercase tracking-[0.18em]" style="color: var(--text-secondary);">AUTOPILOT SESSION COMPLETE</span>
+          </div>
+
+          <div class="flex items-baseline justify-center gap-1.5">
+            <span class="font-mono-tech text-[58px] leading-none font-light tracking-tight" style="color: var(--text-primary);">11:42</span>
+            <span class="font-mono-tech text-[16px] font-normal tracking-wider uppercase" style="color: var(--text-secondary);">PM</span>
+          </div>
+          <p class="font-mono-tech text-[10px] uppercase tracking-[0.18em] mt-2" style="color: var(--text-muted);">
+            CONSCIOUSNESS RESTORED • SESSION #412
+          </p>
+        </div>
+
+        <!-- Clinical Detached Post-Session Report Card -->
+        <div class="clinical-card rounded-3xl p-4 my-3 flex flex-col gap-3.5">
+          <!-- Primary Stat -->
+          <div class="flex items-end justify-between pb-3 border-b" style="border-color: var(--border-hairline);">
+            <div>
+              <p class="font-mono-tech text-[9.5px] uppercase tracking-[0.18em]" style="color: var(--text-muted);">DURATION SKIPPED</p>
+              <p class="font-mono-tech text-[28px] font-light tracking-tight leading-tight mt-0.5" style="color: var(--accent);">13h 18m</p>
+            </div>
+            <span class="font-mono-tech text-[10px] uppercase tracking-[0.2em] pb-1" style="color: var(--text-secondary);">BYPASSED</span>
+          </div>
+
+          <!-- Dual Efficiency Metrics -->
+          <div class="grid grid-cols-2 gap-2.5">
+            <div class="rounded-2xl px-3 py-2.5 border" style="border-color: var(--border-hairline); background-color: var(--bg-surface-elevated);">
+              <p class="font-mono-tech text-[15px] font-medium tracking-tight" style="color: var(--text-primary);">99.4%</p>
+              <p class="font-mono-tech text-[9px] uppercase tracking-[0.16em] mt-0.5" style="color: var(--text-muted);">EFFICIENCY</p>
+            </div>
+            <div class="rounded-2xl px-3 py-2.5 border" style="border-color: var(--border-hairline); background-color: var(--bg-surface-elevated);">
+              <p class="font-mono-tech text-[15px] font-medium tracking-tight" style="color: var(--text-primary);">0.0%</p>
+              <p class="font-mono-tech text-[9px] uppercase tracking-[0.16em] mt-0.5" style="color: var(--text-muted);">FRICTION</p>
+            </div>
+          </div>
+
+          <!-- Compact Automated Task Log -->
+          <div class="pt-1">
+            <p class="font-mono-tech text-[9px] uppercase tracking-[0.2em] mb-2" style="color: var(--text-muted);">AUTOMATED LOG</p>
+            <div class="flex flex-col divide-y" style="border-color: var(--border-hairline);">
+              <div class="flex items-center justify-between py-2 text-[12px]" style="border-color: var(--border-hairline);">
+                <div class="flex items-center gap-2.5">
+                  <span class="font-mono-tech text-[11px]" style="color: var(--text-muted);">08:24</span>
+                  <span style="color: var(--text-primary);">Commute</span>
+                </div>
+                <span class="font-mono-tech text-[10px] uppercase tracking-wider" style="color: var(--text-secondary);">Skipped</span>
+              </div>
+              <div class="flex items-center justify-between py-2 text-[12px]" style="border-color: var(--border-hairline);">
+                <div class="flex items-center gap-2.5">
+                  <span class="font-mono-tech text-[11px]" style="color: var(--text-muted);">09:00</span>
+                  <span style="color: var(--text-primary);">Office Shift</span>
+                </div>
+                <span class="font-mono-tech text-[10px] uppercase tracking-wider" style="color: var(--accent);">Completed</span>
+              </div>
+              <div class="flex items-center justify-between py-2 text-[12px]" style="border-color: var(--border-hairline);">
+                <div class="flex items-center gap-2.5">
+                  <span class="font-mono-tech text-[11px]" style="color: var(--text-muted);">18:30</span>
+                  <span style="color: var(--text-primary);">Return Transit</span>
+                </div>
+                <span class="font-mono-tech text-[10px] uppercase tracking-wider" style="color: var(--text-secondary);">Skipped</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bottom Action Button -->
+        <div class="pt-1">
+          <button
+            id="btn-s2-dismiss"
+            type="button"
+            class="w-full py-3.5 rounded-2xl border font-mono-tech text-[11.5px] uppercase tracking-[0.22em] transition-transform active:scale-[0.98] cursor-pointer"
+            style="border-color: var(--border-strong); background-color: var(--bg-surface); color: var(--text-primary);"
+          >
+            RESUME STANDBY
+          </button>
+        </div>
+      </section>
+
+      <!-- =====================================================================
+           SCENE 4: TEMPTATION / STANDBY MODE (v6.0 BANNER + PULSING ACTIVATE)
+           Built for tight close-up shot of actor's thumb hovering over screen
+           ===================================================================== -->
+      <section id="scene-4" class="hidden flex-1 flex-col justify-between scene-enter">
+        <!-- Sleek v6.0 Upgrade Notification Banner -->
+        <div class="pt-2">
+          <div class="rounded-2xl px-4 py-3 border flex items-start gap-3" style="background-color: var(--banner-bg); border-color: var(--banner-border);">
+            <div class="mt-1 w-2 h-2 rounded-full shrink-0 anim-status-dot" style="background-color: var(--accent);"></div>
+            <div class="min-w-0">
+              <div class="flex items-center gap-2">
+                <span class="text-[12.5px] font-medium tracking-tight" style="color: var(--text-primary);">AutoLife™ 6.0 Arriving Next Month</span>
+              </div>
+              <p class="text-[11.5px] mt-0.5 leading-snug" style="color: var(--text-secondary);">
+                Bypass up to 80% of waking hours.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Uncluttered Center Stage: Hypnotically Pulsing Circular ACTIVATE Button -->
+        <div class="flex-1 flex flex-col items-center justify-center relative my-4">
+          <div class="relative flex items-center justify-center w-64 h-64">
+            <!-- Outer Concentric Breathing Rings -->
+            <div class="absolute inset-0 rounded-full border anim-pulse-ring" style="border-color: var(--accent-ring);"></div>
+            <div class="absolute inset-6 rounded-full border anim-pulse-ring-delay" style="border-color: var(--border-strong);"></div>
+            <div class="absolute inset-11 rounded-full border" style="border-color: var(--border-hairline);"></div>
+
+            <!-- Main High-Contrast Circular ACTIVATE Button -->
+            <button
+              id="btn-activate-s4"
+              type="button"
+              class="activate-btn anim-temptation-btn relative z-10 w-40 h-40 rounded-full flex flex-col items-center justify-center gap-2 cursor-pointer"
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="color: var(--accent);">
+                <circle cx="12" cy="12" r="8" stroke-opacity="0.4" />
+                <circle cx="12" cy="12" r="3" fill="currentColor" />
+              </svg>
+              <span class="font-mono-tech text-[14px] font-medium tracking-[0.26em] uppercase">ACTIVATE</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Minimal Footer Caption -->
+        <div class="text-center pb-2">
+          <p class="font-mono-tech text-[10px] uppercase tracking-[0.22em]" style="color: var(--text-muted);">
+            SKIP THE ORDINARY
+          </p>
+        </div>
+      </section>
+    </main>
+
+    <!-- =======================================================================
+         DISCREET DIRECTOR'S SET CONTROLS (Bottom Sheet Overlay)
+         Hidden completely unless "v5.6" badge is tapped or 'D' key is pressed
+         ======================================================================= -->
+    <div id="director-overlay" class="absolute inset-0 z-50 flex flex-col justify-end">
+      <!-- Backdrop Click Target -->
+      <div id="director-backdrop" class="flex-1"></div>
+
+      <!-- Bottom Sheet -->
+      <div id="director-sheet" class="rounded-t-[1.75rem] px-5 pt-3 pb-7 shadow-2xl">
+        <!-- Sheet Handle -->
+        <div class="w-10 h-1 rounded-full mx-auto mb-4 opacity-30" style="background-color: var(--text-secondary);"></div>
+
+        <!-- Sheet Title Row -->
+        <div class="flex items-center justify-between mb-4">
+          <div>
+            <h3 class="text-[14px] font-semibold tracking-tight" style="color: var(--text-primary);">Director's Set Controls</h3>
+            <p class="font-mono-tech text-[9.5px] uppercase tracking-wider mt-0.5" style="color: var(--text-muted);">OFF-CAMERA PROP MANAGER • SILENT</p>
+          </div>
+          <button
+            id="btn-close-director"
+            type="button"
+            class="px-3 py-1.5 rounded-full font-mono-tech text-[10px] uppercase tracking-wider border cursor-pointer"
+            style="border-color: var(--border-strong); color: var(--text-primary); background-color: var(--bg-surface-elevated);"
+          >
+            Done
+          </button>
+        </div>
+
+        <!-- Scene Switcher -->
+        <div class="mb-4">
+          <p class="font-mono-tech text-[9.5px] uppercase tracking-[0.16em] mb-2" style="color: var(--text-muted);">SCRIPT SCENE MODE</p>
+          <div class="grid grid-cols-1 gap-2">
+            <button
+              type="button"
+              data-scene-btn="1"
+              class="scene-switch-btn w-full text-left px-3.5 py-2.5 rounded-xl border flex items-center justify-between text-[12.5px] font-medium transition-colors cursor-pointer"
+            >
+              <span>Scene 1: Activate</span>
+              <span class="font-mono-tech text-[10px] opacity-70">07:30</span>
+            </button>
+            <button
+              type="button"
+              data-scene-btn="2"
+              class="scene-switch-btn w-full text-left px-3.5 py-2.5 rounded-xl border flex items-center justify-between text-[12.5px] font-medium transition-colors cursor-pointer"
+            >
+              <span>Scene 2: 11:42 PM Summary</span>
+              <span class="font-mono-tech text-[10px] opacity-70">23:42</span>
+            </button>
+            <button
+              type="button"
+              data-scene-btn="4"
+              class="scene-switch-btn w-full text-left px-3.5 py-2.5 rounded-xl border flex items-center justify-between text-[12.5px] font-medium transition-colors cursor-pointer"
+            >
+              <span>Scene 4: Temptation (v6.0)</span>
+              <span class="font-mono-tech text-[10px] opacity-70">07:30</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Visual Theme Switcher -->
+        <div class="mb-4">
+          <p class="font-mono-tech text-[9.5px] uppercase tracking-[0.16em] mb-2" style="color: var(--text-muted);">VISUAL THEME (CAMERA EXPOSURE)</p>
+          <div class="grid grid-cols-2 gap-2">
+            <button
+              type="button"
+              data-theme-btn="dark"
+              class="theme-switch-btn px-3 py-2.5 rounded-xl border text-[12px] font-medium text-center transition-colors cursor-pointer"
+            >
+              Sleek Dark
+            </button>
+            <button
+              type="button"
+              data-theme-btn="light"
+              class="theme-switch-btn px-3 py-2.5 rounded-xl border text-[12px] font-medium text-center transition-colors cursor-pointer"
+            >
+              Sterile White
+            </button>
+          </div>
+        </div>
+
+        <!-- Utility Actions -->
+        <div class="grid grid-cols-3 gap-2">
+          <button
+            id="btn-reset-take"
+            type="button"
+            class="px-2.5 py-2.5 rounded-xl border font-mono-tech text-[10px] uppercase tracking-wider text-center cursor-pointer active:scale-95 transition-transform"
+            style="border-color: var(--border-strong); color: var(--text-primary); background-color: var(--bg-surface-elevated);"
+          >
+            Reset Take
+          </button>
+          <button
+            id="btn-toggle-statusbar"
+            type="button"
+            class="px-2.5 py-2.5 rounded-xl border font-mono-tech text-[10px] uppercase tracking-wider text-center cursor-pointer active:scale-95 transition-transform"
+            style="border-color: var(--border-strong); color: var(--text-primary); background-color: var(--bg-surface-elevated);"
+          >
+            Bar: ON
+          </button>
+          <button
+            id="btn-fullscreen"
+            type="button"
+            class="px-2.5 py-2.5 rounded-xl border font-mono-tech text-[10px] uppercase tracking-wider text-center cursor-pointer active:scale-95 transition-transform"
+            style="border-color: var(--border-strong); color: var(--text-primary); background-color: var(--bg-surface-elevated);"
+          >
+            Fullscreen
+          </button>
+        </div>
+
+        <!-- Subtle Inline Status / Tip (No alert boxes) -->
+        <p id="director-notice" class="font-mono-tech text-[9.5px] text-center mt-3.5 leading-relaxed" style="color: var(--text-muted);">
+          Tip: Double-tap "AUTOPILOT ENGAGED" to quickly reset between takes. Press 'D' on keyboard to toggle controls.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /**
+     * =========================================================================
+     * AUTOLIFE™ v5.6 — FILM PROP CONTROLLER
+     * Completely silent (zero audio) so post-production Storyblocks SFX stay clean.
+     * =========================================================================
+     */
+    (function () {
+      'use strict';
+
+      // Application State
+      const state = {
+        scene: '1',              // '1' | '2' | '4'
+        s1Phase: 'standby',      // 'standby' | 'calibrating' | 'engaged'
+        theme: 'dark',           // 'dark' | 'light'
+        showStatusBar: true,
+        directorOpen: false,
+        calibrationTimer: null,
+        calibrationRaf: null,
+        lastEngagedTap: 0,
+        holdTimer: null
+      };
+
+      // DOM References
+      const els = {
+        html: document.documentElement,
+        body: document.body,
+        metaTheme: document.getElementById('meta-theme-color'),
+        mockStatusBar: document.getElementById('mock-status-bar'),
+        statusBarTime: document.getElementById('status-bar-time'),
+        statusBarBatteryFill: document.getElementById('status-bar-battery-fill'),
+        implantDot: document.getElementById('implant-dot'),
+        implantText: document.getElementById('implant-text'),
+
+        // Scenes
+        scene1: document.getElementById('scene-1'),
+        scene2: document.getElementById('scene-2'),
+        scene4: document.getElementById('scene-4'),
+
+        // Scene 1 Substates
+        s1Standby: document.getElementById('s1-standby'),
+        s1Calibrating: document.getElementById('s1-calibrating'),
+        s1Engaged: document.getElementById('s1-engaged'),
+        calibPercent: document.getElementById('calib-percent'),
+        calibStageText: document.getElementById('calib-stage-text'),
+        calibProgressBar: document.getElementById('calib-progress-bar'),
+        engagedResetZone: document.getElementById('engaged-reset-zone'),
+
+        // Action Buttons
+        btnActivateS1: document.getElementById('btn-activate-s1'),
+        btnActivateS4: document.getElementById('btn-activate-s4'),
+        btnS2Dismiss: document.getElementById('btn-s2-dismiss'),
+
+        // Director Controls
+        directorTriggerBtn: document.getElementById('director-trigger-btn'),
+        directorOverlay: document.getElementById('director-overlay'),
+        directorBackdrop: document.getElementById('director-backdrop'),
+        btnCloseDirector: document.getElementById('btn-close-director'),
+        btnResetTake: document.getElementById('btn-reset-take'),
+        btnToggleStatusBar: document.getElementById('btn-toggle-statusbar'),
+        btnFullscreen: document.getElementById('btn-fullscreen'),
+        directorNotice: document.getElementById('director-notice'),
+        sceneBtns: document.querySelectorAll('.scene-switch-btn'),
+        themeBtns: document.querySelectorAll('.theme-switch-btn'),
+
+        // Biometric Telemetry Canvas
+        canvasWrap: document.getElementById('telemetry-canvas-wrap'),
+        canvas: document.getElementById('telemetry-canvas')
+      };
+
+      /* =======================================================================
+         1. SCENE & SUBSTATE MANAGEMENT
+         ======================================================================= */
+
+      /**
+       * Cancels any active neural-sync calibration timers cleanly.
+       */
+      function cancelCalibration() {
+        if (state.calibrationRaf) {
+          cancelAnimationFrame(state.calibrationRaf);
+          state.calibrationRaf = null;
+        }
+        if (state.calibrationTimer) {
+          clearTimeout(state.calibrationTimer);
+          state.calibrationTimer = null;
+        }
+      }
+
+      /**
+       * Updates the top mock phone bar clock and battery to match the current script scene.
+       */
+      function updateStatusBarMeta() {
+        if (state.scene === '2') {
+          els.statusBarTime.textContent = '11:42';
+          els.statusBarBatteryFill.style.width = '29%';
+        } else {
+          els.statusBarTime.textContent = '07:30';
+          els.statusBarBatteryFill.style.width = '84%';
+        }
+      }
+
+      /**
+       * Updates the neural implant pill in the header based on scene/phase.
+       */
+      function updateImplantHeader() {
+        if (state.scene === '1' && state.s1Phase === 'engaged') {
+          els.implantText.textContent = 'AUTOPILOT • LOCKED';
+          els.implantDot.style.backgroundColor = 'var(--accent)';
+        } else if (state.scene === '1' && state.s1Phase === 'calibrating') {
+          els.implantText.textContent = 'SYNCING CORTEX...';
+          els.implantDot.style.backgroundColor = 'var(--accent)';
+        } else if (state.scene === '2') {
+          els.implantText.textContent = 'IMPLANT STANDBY • 99.4%';
+          els.implantDot.style.backgroundColor = 'var(--status-good)';
+        } else {
+          els.implantText.textContent = 'IMPLANT LINKED • 99.8%';
+          els.implantDot.style.backgroundColor = 'var(--status-good)';
+        }
+      }
+
+      /**
+       * Switches Scene 1 between 'standby', 'calibrating', and 'engaged'.
+       */
+      function setScene1Phase(phase) {
+        state.s1Phase = phase;
+
+        els.s1Standby.classList.add('hidden');
+        els.s1Standby.classList.remove('flex');
+        els.s1Calibrating.classList.add('hidden');
+        els.s1Calibrating.classList.remove('flex');
+        els.s1Engaged.classList.add('hidden');
+        els.s1Engaged.classList.remove('flex');
+
+        if (phase === 'standby') {
+          els.s1Standby.classList.remove('hidden');
+          els.s1Standby.classList.add('flex');
+          resizeTelemetryCanvas();
+        } else if (phase === 'calibrating') {
+          els.s1Calibrating.classList.remove('hidden');
+          els.s1Calibrating.classList.add('flex');
+        } else if (phase === 'engaged') {
+          els.s1Engaged.classList.remove('hidden');
+          els.s1Engaged.classList.add('flex');
+        }
+
+        updateImplantHeader();
+      }
+
+      /**
+       * Switches between Scene 1 (Activate), Scene 2 (11:42 PM Summary), and Scene 4 (Temptation).
+       */
+      function setScene(sceneId) {
+        cancelCalibration();
+        state.scene = String(sceneId);
+
+        [els.scene1, els.scene2, els.scene4].forEach((sec) => {
+          sec.classList.add('hidden');
+          sec.classList.remove('flex', 'scene-enter');
+        });
+
+        let target = els.scene1;
+        if (state.scene === '2') target = els.scene2;
+        if (state.scene === '4') target = els.scene4;
+
+        target.classList.remove('hidden');
+        target.classList.add('flex');
+        // Force reflow so subtle enter animation replays cleanly
+        void target.offsetWidth;
+        target.classList.add('scene-enter');
+
+        if (state.scene === '1') {
+          setScene1Phase('standby');
+        }
+
+        updateStatusBarMeta();
+        updateImplantHeader();
+        syncDirectorControlButtons();
+      }
+
+      /**
+       * Runs the smooth, silent 2.5-second neural-sync calibration sequence
+       * and transitions into the "AUTOPILOT ENGAGED" lock screen.
+       */
+      function startActivationSequence() {
+        cancelCalibration();
+
+        // Ensure Scene 1 container is active (also supports alternate take from Scene 4)
+        if (state.scene !== '1') {
+          state.scene = '1';
+          els.scene2.classList.add('hidden');
+          els.scene2.classList.remove('flex');
+          els.scene4.classList.add('hidden');
+          els.scene4.classList.remove('flex');
+          els.scene1.classList.remove('hidden');
+          els.scene1.classList.add('flex');
+          syncDirectorControlButtons();
+        }
+
+        setScene1Phase('calibrating');
+
+        const durationMs = 2500;
+        const startTime = performance.now();
+
+        function step(now) {
+          const elapsed = now - startTime;
+          const progress = Math.min(elapsed / durationMs, 1);
+          // Smooth cubic ease-in-out curve for futuristic precision
+          const eased = progress < 0.5
+            ? 2 * progress * progress
+            : 1 - Math.pow(-2 * progress + 2, 2) / 2;
+
+          const pct = Math.round(eased * 100);
+          els.calibPercent.textContent = pct + '%';
+          els.calibProgressBar.style.width = pct + '%';
+
+          if (progress < 0.34) {
+            els.calibStageText.textContent = 'INITIALIZING NEURAL LINK...';
+          } else if (progress < 0.72) {
+            els.calibStageText.textContent = 'CALIBRATING CORTEX...';
+          } else {
+            els.calibStageText.textContent = 'SUSPENDING CONSCIOUSNESS...';
+          }
+
+          if (progress < 1) {
+            state.calibrationRaf = requestAnimationFrame(step);
+          } else {
+            state.calibrationRaf = null;
+            state.calibrationTimer = setTimeout(() => {
+              setScene1Phase('engaged');
+            }, 140);
+          }
+        }
+
+        state.calibrationRaf = requestAnimationFrame(step);
+      }
+
+      /**
+       * Resets the current take cleanly back to pre-tap Standby.
+       */
+      function resetTake() {
+        cancelCalibration();
+        if (state.scene === '1') {
+          setScene1Phase('standby');
+        } else if (state.scene === '4') {
+          setScene('4');
+        } else {
+          setScene('1');
+        }
+        showDirectorNotice('Take reset — ready for camera.');
+      }
+
+      /* =======================================================================
+         2. VISUAL THEME & DIRECTOR CONTROLS
+         ======================================================================= */
+
+      function setTheme(themeName) {
+        state.theme = themeName === 'light' ? 'light' : 'dark';
+        els.html.setAttribute('data-theme', state.theme);
+        els.metaTheme.setAttribute('content', state.theme === 'dark' ? '#07090d' : '#f4f7fb');
+        syncDirectorControlButtons();
+      }
+
+      function toggleStatusBar() {
+        state.showStatusBar = !state.showStatusBar;
+        if (state.showStatusBar) {
+          els.mockStatusBar.classList.remove('hidden');
+          els.mockStatusBar.classList.add('flex');
+          els.btnToggleStatusBar.textContent = 'Bar: ON';
+        } else {
+          els.mockStatusBar.classList.add('hidden');
+          els.mockStatusBar.classList.remove('flex');
+          els.btnToggleStatusBar.textContent = 'Bar: OFF';
+        }
+      }
+
+      function openDirectorControls() {
+        state.directorOpen = true;
+        els.directorOverlay.classList.add('open');
+        syncDirectorControlButtons();
+      }
+
+      function closeDirectorControls() {
+        state.directorOpen = false;
+        els.directorOverlay.classList.remove('open');
+      }
+
+      function toggleDirectorControls() {
+        if (state.directorOpen) {
+          closeDirectorControls();
+        } else {
+          openDirectorControls();
+        }
+      }
+
+      function showDirectorNotice(msg) {
+        els.directorNotice.textContent = msg;
+      }
+
+      /**
+       * Highlights the currently active scene and theme inside the Director Sheet.
+       */
+      function syncDirectorControlButtons() {
+        els.sceneBtns.forEach((btn) => {
+          const isActive = btn.getAttribute('data-scene-btn') === state.scene;
+          btn.style.borderColor = isActive ? 'var(--accent)' : 'var(--border-hairline)';
+          btn.style.backgroundColor = isActive ? 'var(--accent-soft)' : 'var(--bg-surface-elevated)';
+          btn.style.color = isActive ? 'var(--accent)' : 'var(--text-primary)';
+        });
+
+        els.themeBtns.forEach((btn) => {
+          const isActive = btn.getAttribute('data-theme-btn') === state.theme;
+          btn.style.borderColor = isActive ? 'var(--accent)' : 'var(--border-hairline)';
+          btn.style.backgroundColor = isActive ? 'var(--accent-soft)' : 'var(--bg-surface-elevated)';
+          btn.style.color = isActive ? 'var(--accent)' : 'var(--text-primary)';
+        });
+      }
+
+      /**
+       * Safely toggles Fullscreen mode without using alert().
+       */
+      async function toggleFullscreen() {
+        try {
+          if (!document.fullscreenElement) {
+            if (document.documentElement.requestFullscreen) {
+              await document.documentElement.requestFullscreen();
+              els.body.classList.add('is-fullscreen');
+              els.btnFullscreen.textContent = 'Exit Full';
+              closeDirectorControls();
+            } else {
+              showDirectorNotice('On iOS Safari: tap Share → "Add to Home Screen" for full-screen prop lock.');
+            }
+          } else {
+            await document.exitFullscreen();
+            els.body.classList.remove('is-fullscreen');
+            els.btnFullscreen.textContent = 'Fullscreen';
+          }
+        } catch (err) {
+          showDirectorNotice('Fullscreen blocked by browser. Use "Add to Home Screen" on mobile for edge-to-edge lock.');
+        }
+      }
+
+      document.addEventListener('fullscreenchange', () => {
+        if (document.fullscreenElement) {
+          els.body.classList.add('is-fullscreen');
+          els.btnFullscreen.textContent = 'Exit Full';
+        } else {
+          els.body.classList.remove('is-fullscreen');
+          els.btnFullscreen.textContent = 'Fullscreen';
+        }
+        resizeTelemetryCanvas();
+      });
+
+      /* =======================================================================
+         3. RESPONSIVE BIOMETRIC TELEMETRY CANVAS (HiDPI)
+         Draws clinical concentric rings, radial ticks, and subtle live sine wave
+         ======================================================================= */
+      const ctx = els.canvas.getContext('2d');
+      let canvasSize = 260;
+      let wavePhase = 0;
+
+      function getCssVar(name) {
+        return getComputedStyle(els.html).getPropertyValue(name).trim();
+      }
+
+      function resizeTelemetryCanvas() {
+        try {
+          if (!els.canvasWrap || !els.canvas) return;
+          const rect = els.canvasWrap.getBoundingClientRect();
+          if (rect.width === 0 || rect.height === 0) return;
+
+          const dpr = Math.min(window.devicePixelRatio || 1, 2.5);
+          canvasSize = Math.floor(Math.min(rect.width, rect.height));
+
+          els.canvas.width = Math.floor(canvasSize * dpr);
+          els.canvas.height = Math.floor(canvasSize * dpr);
+          ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        } catch (e) {
+          // Fail silently if canvas hidden during layout transition
+        }
+      }
+
+      function renderTelemetryLoop() {
+        try {
+          if (state.scene === '1' && state.s1Phase === 'standby' && canvasSize > 0) {
+            const w = canvasSize;
+            const h = canvasSize;
+            const cx = w / 2;
+            const cy = h / 2;
+            const outerR = w * 0.46;
+            const innerR = w * 0.35;
+
+            ctx.clearRect(0, 0, w, h);
+
+            const ringColor = getCssVar('--canvas-ring') || 'rgba(148,163,184,0.15)';
+            const tickColor = getCssVar('--canvas-tick') || 'rgba(148,163,184,0.32)';
+            const waveColor = getCssVar('--canvas-wave') || 'rgba(56,189,248,0.85)';
+            const waveDim = getCssVar('--canvas-wave-dim') || 'rgba(148,163,184,0.22)';
+
+            // 1. Outer hairline ring
+            ctx.beginPath();
+            ctx.arc(cx, cy, outerR, 0, Math.PI * 2);
+            ctx.strokeStyle = ringColor;
+            ctx.lineWidth = 1;
+            ctx.stroke();
+
+            // 2. Subtle radial precision ticks (60 clinical segments)
+            const tickCount = 60;
+            for (let i = 0; i < tickCount; i++) {
+              const angle = (i / tickCount) * Math.PI * 2 - Math.PI / 2;
+              const isMajor = i % 5 === 0;
+              const r1 = outerR - (isMajor ? 7 : 3.5);
+              const r2 = outerR;
+              ctx.beginPath();
+              ctx.moveTo(cx + Math.cos(angle) * r1, cy + Math.sin(angle) * r1);
+              ctx.lineTo(cx + Math.cos(angle) * r2, cy + Math.sin(angle) * r2);
+              ctx.strokeStyle = isMajor ? tickColor : ringColor;
+              ctx.lineWidth = isMajor ? 1.2 : 0.8;
+              ctx.stroke();
+            }
+
+            // 3. Slowly orbiting telemetry arc
+            const sweepStart = wavePhase * 0.38;
+            ctx.beginPath();
+            ctx.arc(cx, cy, outerR, sweepStart, sweepStart + Math.PI * 0.35);
+            ctx.strokeStyle = waveColor;
+            ctx.lineWidth = 1.6;
+            ctx.lineCap = 'round';
+            ctx.stroke();
+
+            // 4. Inner dashed biometric ring
+            ctx.save();
+            ctx.setLineDash([2, 5]);
+            ctx.beginPath();
+            ctx.arc(cx, cy, innerR, 0, Math.PI * 2);
+            ctx.strokeStyle = ringColor;
+            ctx.lineWidth = 1;
+            ctx.stroke();
+            ctx.restore();
+
+            // 5. Smooth subtle dual sine-wave visualization clipped to inner ring
+            ctx.save();
+            ctx.beginPath();
+            ctx.arc(cx, cy, innerR - 4, 0, Math.PI * 2);
+            ctx.clip();
+
+            const span = (innerR - 6) * 2;
+            const startX = cx - (innerR - 6);
+
+            // Secondary harmonic wave (faint)
+            ctx.beginPath();
+            for (let x = 0; x <= span; x += 2) {
+              const norm = x / span; // 0 to 1
+              const env = Math.sin(norm * Math.PI); // Smooth taper at edges
+              const y = cy + Math.sin(norm * Math.PI * 4.5 - wavePhase * 1.1) * 14 * env;
+              if (x === 0) ctx.moveTo(startX + x, y);
+              else ctx.lineTo(startX + x, y);
+            }
+            ctx.strokeStyle = waveDim;
+            ctx.lineWidth = 1;
+            ctx.stroke();
+
+            // Primary neural sine wave
+            ctx.beginPath();
+            for (let x = 0; x <= span; x += 2) {
+              const norm = x / span;
+              const env = Math.sin(norm * Math.PI);
+              const y = cy + (
+                Math.sin(norm * Math.PI * 3.2 + wavePhase * 1.6) * 9 +
+                Math.sin(norm * Math.PI * 7.0 + wavePhase * 2.4) * 3.5
+              ) * env;
+              if (x === 0) ctx.moveTo(startX + x, y);
+              else ctx.lineTo(startX + x, y);
+            }
+            ctx.strokeStyle = waveColor;
+            ctx.lineWidth = 1.5;
+            ctx.stroke();
+
+            ctx.restore();
+            wavePhase += 0.028;
+          }
+        } catch (e) {
+          // Guard animation loop against intermittent resize errors
+        }
+        requestAnimationFrame(renderTelemetryLoop);
+      }
+
+      /* =======================================================================
+         4. EVENT LISTENERS (Click, Touch, Double-Tap / Hold Reset, Keyboard)
+         ======================================================================= */
+
+      // Primary ACTIVATE buttons (Scene 1 & Scene 4)
+      els.btnActivateS1.addEventListener('click', startActivationSequence);
+      els.btnActivateS4.addEventListener('click', startActivationSequence);
+
+      // Scene 2 Dismiss -> Smoothly returns to Scene 1 Standby
+      els.btnS2Dismiss.addEventListener('click', () => {
+        setScene('1');
+      });
+
+      // Subtle Double-Tap OR 1.1s Press-and-Hold on "AUTOPILOT ENGAGED" to reset for next take
+      els.engagedResetZone.addEventListener('click', () => {
+        const now = Date.now();
+        if (now - state.lastEngagedTap < 360) {
+          state.lastEngagedTap = 0;
+          setScene1Phase('standby');
+        } else {
+          state.lastEngagedTap = now;
+        }
+      });
+
+      function startHoldReset() {
+        clearTimeout(state.holdTimer);
+        state.holdTimer = setTimeout(() => {
+          if (state.scene === '1' && state.s1Phase === 'engaged') {
+            setScene1Phase('standby');
+          }
+        }, 1100);
+      }
+
+      function cancelHoldReset() {
+        clearTimeout(state.holdTimer);
+      }
+
+      els.engagedResetZone.addEventListener('touchstart', startHoldReset, { passive: true });
+      els.engagedResetZone.addEventListener('touchend', cancelHoldReset);
+      els.engagedResetZone.addEventListener('touchcancel', cancelHoldReset);
+      els.engagedResetZone.addEventListener('mousedown', startHoldReset);
+      els.engagedResetZone.addEventListener('mouseup', cancelHoldReset);
+      els.engagedResetZone.addEventListener('mouseleave', cancelHoldReset);
+
+      // Director's Set Controls Triggers
+      els.directorTriggerBtn.addEventListener('click', toggleDirectorControls);
+      els.directorBackdrop.addEventListener('click', closeDirectorControls);
+      els.btnCloseDirector.addEventListener('click', closeDirectorControls);
+
+      // Scene Switcher Buttons
+      els.sceneBtns.forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const targetScene = btn.getAttribute('data-scene-btn');
+          setScene(targetScene);
+          closeDirectorControls();
+        });
+      });
+
+      // Theme Switcher Buttons
+      els.themeBtns.forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const targetTheme = btn.getAttribute('data-theme-btn');
+          setTheme(targetTheme);
+        });
+      });
+
+      // Director Utilities
+      els.btnResetTake.addEventListener('click', () => {
+        resetTake();
+        closeDirectorControls();
+      });
+
+      els.btnToggleStatusBar.addEventListener('click', toggleStatusBar);
+      els.btnFullscreen.addEventListener('click', toggleFullscreen);
+
+      // Keyboard Shortcuts for Desk/Laptop Preview ('D' for Director Controls, 'Esc' to close)
+      window.addEventListener('keydown', (e) => {
+        if (e.key === 'd' || e.key === 'D') {
+          toggleDirectorControls();
+        } else if (e.key === 'Escape' && state.directorOpen) {
+          closeDirectorControls();
+        }
+      });
+
+      // Responsive Canvas Resize Observer
+      window.addEventListener('resize', resizeTelemetryCanvas);
+      if (typeof ResizeObserver !== 'undefined' && els.canvasWrap) {
+        const ro = new ResizeObserver(resizeTelemetryCanvas);
+        ro.observe(els.canvasWrap);
+      }
+
+      // Initialize cleanly on window load
+      window.onload = function () {
+        setTheme('dark');
+        setScene('1');
+        resizeTelemetryCanvas();
+        renderTelemetryLoop();
+      };
+    })();
+  </script>
+</body>
+</html>
